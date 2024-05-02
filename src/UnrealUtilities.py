@@ -49,4 +49,7 @@ def ImportMeshAndAnims(meshPath, animDir):
             animPath = os.path.join(animDir, filename) 
             ImportAnim(mesh, animPath)
 
-ImportMeshAndAnims("C:/Users/jili1/Downloads/out/Alex.fbx", "C:/Users/jili1/Downloads/out/anim")
+#ImportMeshAndAnims("C:/Users/jili1/Downloads/out/Alex.fbx", "C:/Users/jili1/Downloads/out/anim")
+
+
+
