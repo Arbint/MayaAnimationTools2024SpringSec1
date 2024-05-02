@@ -1,7 +1,6 @@
 import unreal
 import os
-def ImportSkeletalMesh(meshPath):
-    
+def CreateImportTask(meshPath): 
     importTask = unreal.AssetImportTask()
     importTask.filename = meshPath
     assetName = os.path.basename(os.path.abspath(meshPath)).split(".")[0]
@@ -9,6 +8,10 @@ def ImportSkeletalMesh(meshPath):
     importTask.automated = True # do not popup the import options
     importTask.save = True
     importTask.replace_existing = True
+    return importTask
+
+def ImportSkeletalMesh(meshPath):
+    importTask = CreateImportTask(meshPath)
 
     importOptions = unreal.FbxImportUI()
     importOptions.import_mesh = True
@@ -21,5 +24,29 @@ def ImportSkeletalMesh(meshPath):
     unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([importTask])
     return importTask.get_objects()[0]
 
+def ImportAnim(mesh : unreal.SkeletalMesh, animPath):
+    importTask = CreateImportTask(animPath)
+    meshDir = os.path.dirname(mesh.get_path_name())
+    importTask.destination_path = meshDir + "/animations"
 
-ImportSkeletalMesh("C:/Users/jili1/Downloads/out/Alex.fbx")
+    importOtions = unreal.FbxImportUI()
+    importOtions.import_mesh = False
+    importOtions.import_as_skeletal = True
+    importOtions.skeleton = mesh.skeleton
+    importOtions.import_animations = True
+
+    importOtions.set_editor_property('automated_import_should_detect_type', False)
+    importOtions.set_editor_property('original_import_type', unreal.FBXImportType.FBXIT_SKELETAL_MESH)
+    importOtions.set_editor_property('mesh_type_to_import', unreal.FBXImportType.FBXIT_ANIMATION)
+
+    importTask.options = importOtions
+    unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([importTask])
+    
+def ImportMeshAndAnims(meshPath, animDir):
+    mesh = ImportSkeletalMesh(meshPath)
+    for filename in os.listdir(animDir):
+        if ".fbx" in filename:
+            animPath = os.path.join(animDir, filename) 
+            ImportAnim(mesh, animPath)
+
+ImportMeshAndAnims("C:/Users/jili1/Downloads/out/Alex.fbx", "C:/Users/jili1/Downloads/out/anim")
