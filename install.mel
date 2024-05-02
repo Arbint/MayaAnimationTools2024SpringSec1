@@ -1,0 +1,26 @@
+global proc PathLocator() {}; // dummy function to help find where we are 
+string $installFileInfo = `whatIs PathLocator`; //this gives the infomation of the PathLocator function, with in, we can see the path
+string $installerPath = `substring $installFileInfo 25 999`; // extract the path
+string $pluginDir = `dirname $installerPath`; // get the directory of the plugin in
+
+string $srcDir = $pluginDir + "/src/";
+string $assetDir = $pluginDir + "/assets/";
+
+global proc AddPluginToShelf(string $scriptName)
+{
+    global string $srcDir; // declare the existence of $srcDir so we can use it inside of the funciton.
+    global string $assetDir; // declare the existence of $assetDir so we can use it inside of the function.
+
+    string $scriptPath = $srcDir + $scriptName + ".py";
+    string $iconPath = $assetDir + $scriptName + ".png";
+
+    string $currentSelf = `tabLayout -q -selectTab "ShelfLayout"`;
+    setParent $currentSelf;
+
+    string $command = "exec(open(\"" + $scriptPath + "\").read())";
+    shelfButton -c $command -stp "python" -image $iconPath; 
+}
+
+AddPluginToShelf("CreateController");
+AddPluginToShelf("MayaToUE");
+AddPluginToShelf("Ghoster");
